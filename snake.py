@@ -1,30 +1,44 @@
-import pygame, sys
+import pygame, sys, random
 
 pygame.init()
 
-size = width, height = 320, 240
-speed = [2,2]
+# Creating screen
 
-# Colors
+size = width, hight = 600, 600
 
-colorDict = {
-    "BLACK": (0,0,0),
-    "WHITE": (225,225,225),
-    "GREEN": (0,225,0),
-    "RED": (225,0,0)
+window = pygame.display.set_mode(size)
+
+# Color dictionary
+
+colors = {
+        "RED": (225, 0, 0),
+        "GREEN": (0, 225, 0),
+        "BLUE": (0, 0, 225)
 }
 
-screen = pygame.display.set_mode(size)
+class Snake():
+    def __init__(self):
+        self.direction = "RIGHT"
+        self.head = x, y = 300, 300
 
-#gameLoop
+    def update(self):
+        head = pygame.Rect(self.head.x, self.head.y, 6, 6)
+        pygame.draw.rect(window, colors["GREEN"], head)
+        pygame.display.flip()
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-            pygame.quit()
-            break
-    
-    screen.fill(colorDict["WHITE"])
-    
-    pygame.display.flip()
+class Apple():
+    def __init__(self):
+        pass
+if "__name__" == __main__:
+    gameLoop = True
+
+    snake = Snake()
+    apple = Apple()
+
+    while gameLoop:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+                pygame.quit()
+                gameLoop = False
+
