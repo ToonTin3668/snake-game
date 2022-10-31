@@ -4,9 +4,7 @@ pygame.init()
 
 # Creating screen
 
-size = width, hight = 600, 600
-
-window = pygame.display.set_mode(size)
+window = pygame.display.set_mode((600,600))
 
 # Time
 clock = pygame.time.Clock()
@@ -25,7 +23,7 @@ colors = {
 
 class Snake():
     def __init__(self):
-        self.x, self.y = 300, 300
+        self.pos = [0, 0]
         self.speed = 1
         self.scl = 30
 
@@ -33,18 +31,17 @@ class Snake():
         self.direction = direction
         
         if direction == "RIGHT":
-            self.x += self.speed*self.scl
+            self.pos[0] += self.speed*self.scl
         if direction == "LEFT":
-            self.x -= self.speed*self.scl
+            self.pos[0] -= self.speed*self.scl
         if direction == "UP":
-            self.y -= self.speed*self.scl
+            self.pos[1] -= self.speed*self.scl
         if direction == "DOWN":
-            self.y += self.speed*self.scl
+            self.pos[1] += self.speed*self.scl
 
-        head = pygame.Rect(self.x, self.y, self.scl, self.scl)
+        head = pygame.Rect(self.pos[0], self.pos[1], self.scl, self.scl)
         pygame.draw.rect(window, colors["GREEN"], head)
-        print("X " + str(self.x) + " Y " + str(self.y))
-        pygame.display.flip()
+        # print("X " + str(self.x) + " Y " + str(self.y))
 
 
     def getInput(self, evt):
@@ -59,29 +56,27 @@ class Snake():
         return self.direction
         
 
-    def die(self):
-        if self.x <= 0 or self.x >= 600:
+    def checkDeath(self):
+        if (self.pos[0] < 0 or self.pos[0] > 600) or (self.pos[1] < 0 or self.pos[1] > 600):
             print("YOU DIED")
             sys.exit()
-        if self.y <= 0 or self.y >= 600:
-            print("YOU DIED")
-            sys.exit()
+
+    def eatApple(self):
+        pass
 
 # apple
 
 class Apple():
     def __init__(self):
-        self.x = round(random.randint(1,300)/30)
-        self.y = round(random.randint(1,300)/30)
-    
-    def spawnApple(self):
-        self.x = round(random.randint(1,300)%30)
-        self.y = round(random.randint(1,300)%30)
-
-        apple = pygame.Rect(self.x, self.y, 30, 30)
+        self.pos = [random.randrange(1,20)*30 ,random.randrange(1,20)*30]
+        
+    def spawnApple(self, newPos=False):
+        if newPos:
+            self.pos = [random.randrange(1,20)*30, random.randrange(1,20)*30]
+ 
+        apple = pygame.Rect(self.pos[0], self.pos[1], 30, 30)
 
         pygame.draw.rect(window, colors["RED"], apple)
-        pygame.display.flip();
 
 if __name__ == "__main__":
     gameLoop = True
@@ -100,10 +95,27 @@ if __name__ == "__main__":
             if event.type == pygame.KEYDOWN:
                 dir = snake.getInput(event)
 
-        apple.spawnApple()
-        window.fill(colors["BLACK"])
+        
+        window.fill(colors["WHITE"])
+        pygame.draw.rect(window, colors["BLACK"], (0,0,600,600))
+
+        snakePos = snake.pos[0] + snake.pos[1]
+        applePos = apple.pos[0] + apple.pos[1]
+
+        if snakePos == applePos:
+            snake.eatApple()
+            apple.spawnApple(newPos=True)
+            print(str(snakePos))
+            print(str(applePos))
+            
+        else:
+            apple.spawnApple()
+
+
+        snake.checkDeath()
         snake.update(dir)
-        snake.die()
-        pygame.time.delay(500);
+        pygame.display.flip()
+        
+        pygame.time.delay(250);
         clock.tick(60)
 
