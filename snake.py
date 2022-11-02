@@ -25,6 +25,8 @@ class Snake():
     def __init__(self):
         self.pos = [0, 0]
         self.speed = 1
+        self.length = 1
+        self.body = [[0,0]]
         self.scl = 30
 
     def update(self, direction):
@@ -39,10 +41,11 @@ class Snake():
         if direction == "DOWN":
             self.pos[1] += self.speed*self.scl
 
-        head = pygame.Rect(self.pos[0], self.pos[1], self.scl, self.scl)
-        pygame.draw.rect(window, colors["GREEN"], head)
-        # print("X " + str(self.x) + " Y " + str(self.y))
-
+        
+        for i in range(self.length):
+            self.body[-abs(i)]= self.body[-abs(i+1)]                 
+            pygame.draw.rect(window, colors["GREEN"], (self.body[i][0], self.pos[i][1], self.scl, self.scl))
+        
 
     def getInput(self, evt):
         if evt.key == pygame.K_RIGHT:
@@ -62,7 +65,7 @@ class Snake():
             sys.exit()
 
     def eatApple(self):
-        pass
+        self.body.append(self.body[-1] + [30, 30])
 
 # apple
 
@@ -102,18 +105,22 @@ if __name__ == "__main__":
         snakePos = snake.pos[0] + snake.pos[1]
         applePos = apple.pos[0] + apple.pos[1]
 
-        if snakePos == applePos:
-            snake.eatApple()
-            apple.spawnApple(newPos=True)
-            print(str(snakePos))
-            print(str(applePos))
+        snake.checkDeath()
+        snake.update(dir)
+
+        print("X " + str(snake.pos[0]) + " Y " + str(snake.pos[1]))
+        print("X " + str(apple.pos[0]) + " Y " + str(apple.pos[1]))
+
+
+        if snake.pos[0] == apple.pos[0] and snake.pos[1] == apple.pos[1]:
+                snake.eatApple()
+                apple.spawnApple(newPos=True)
+                print(str(snakePos))
+                print(str(applePos))
             
         else:
             apple.spawnApple()
 
-
-        snake.checkDeath()
-        snake.update(dir)
         pygame.display.flip()
         
         pygame.time.delay(250);
